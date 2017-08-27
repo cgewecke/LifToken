@@ -156,39 +156,11 @@ contract('marketMaker', function(accounts) {
     assert.equal(4, parseInt(await mm.getCurrentPeriodIndex()) );
   });
 
-  const periods = 24;
-  const tokenTotalSupply = 100;
-
-  var checkScenarioProperties = async function(data, mm, customer) {
-    help.debug("checking scenario", JSON.stringify(data));
-
-    assert.equal(data.month, await mm.getCurrentPeriodIndex());
-    data.marketMakerEthBalance.should.be.bignumber.equal(web3.eth.getBalance(mm.address));
-    data.marketMakerLifBalance.should.be.bignumber.equal(await token.balanceOf(mm.address));
-
-    new BigNumber(web3.toWei(tokenTotalSupply, 'ether')).
-      minus(data.burnedTokens).
-      should.be.bignumber.equal(await token.totalSupply.call());
-    data.burnedTokens.should.be.bignumber.equal(await mm.totalBurnedTokens.call());
-
-    if (data.month < periods) {
-      data.marketMakerBuyPrice.should.be.bignumber.equal(await mm.getBuyPrice());
-      assert.equal(data.claimablePercentage, parseInt(await mm.getAccumulatedDistributionPercentage()));
-    }
-
-    assert.equal(data.month >= periods, await mm.isFinished());
-
-    data.customerEthBalance.should.be.bignumber.equal(web3.eth.getBalance(customer));
-    data.customerLifBalance.should.be.bignumber.equal(await token.balanceOf(customer));
-
-    data.maxClaimableEth.should.be.bignumber.equal(await mm.getMaxClaimableWeiAmount());
-
-    data.totalClaimedEth.should.be.bignumber.equal(await mm.totalWeiClaimed.call());
-  };
-
   it("should go through scenario with some claims and sells on the Market Maker", async function() {
     // Create MM with balance of 200 ETH and 100 tokens in circulation,
     const priceFactor = 100000;
+    const tokenTotalSupply = 100;
+    const periods = 24;
 
     token = await simulateCrowdsale(tokenTotalSupply, [tokenTotalSupply], accounts);
 
@@ -225,6 +197,33 @@ contract('marketMaker', function(accounts) {
       3201, 3693, 4215, 4766, 5345, 5951,
       6583, 7243, 7929, 8640, 9377, 10138
     ];
+
+    const checkScenarioProperties = async function(data, mm, customer) {
+      help.debug("checking scenario", JSON.stringify(data));
+
+      assert.equal(data.month, await mm.getCurrentPeriodIndex());
+      data.marketMakerEthBalance.should.be.bignumber.equal(web3.eth.getBalance(mm.address));
+      data.marketMakerLifBalance.should.be.bignumber.equal(await token.balanceOf(mm.address));
+
+      new BigNumber(web3.toWei(tokenTotalSupply, 'ether')).
+        minus(data.burnedTokens).
+        should.be.bignumber.equal(await token.totalSupply.call());
+      data.burnedTokens.should.be.bignumber.equal(await mm.totalBurnedTokens.call());
+
+      if (data.month < periods) {
+        data.marketMakerBuyPrice.should.be.bignumber.equal(await mm.getBuyPrice());
+        assert.equal(data.claimablePercentage, parseInt(await mm.getAccumulatedDistributionPercentage()));
+      }
+
+      assert.equal(data.month >= periods, await mm.isFinished());
+
+      data.customerEthBalance.should.be.bignumber.equal(web3.eth.getBalance(customer));
+      data.customerLifBalance.should.be.bignumber.equal(await token.balanceOf(customer));
+
+      data.maxClaimableEth.should.be.bignumber.equal(await mm.getMaxClaimableWeiAmount());
+
+      data.totalClaimedEth.should.be.bignumber.equal(await mm.totalWeiClaimed.call());
+    };
 
     let getMaxClaimableEth = function(state) {
       if (state.month >= periods) {
