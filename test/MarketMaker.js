@@ -198,31 +198,31 @@ contract('marketMaker', function(accounts) {
       6583, 7243, 7929, 8640, 9377, 10138
     ];
 
-    const checkScenarioProperties = async function(data, mm, customer) {
-      help.debug("checking scenario", JSON.stringify(data));
+    const checkScenarioProperties = async function(state, mm, customer) {
+      help.debug("checking scenario", JSON.stringify(state));
 
-      assert.equal(data.month, await mm.getCurrentPeriodIndex());
-      data.marketMakerEthBalance.should.be.bignumber.equal(web3.eth.getBalance(mm.address));
-      data.marketMakerLifBalance.should.be.bignumber.equal(await token.balanceOf(mm.address));
+      assert.equal(state.month, await mm.getCurrentPeriodIndex());
+      state.marketMakerEthBalance.should.be.bignumber.equal(web3.eth.getBalance(mm.address));
+      state.marketMakerLifBalance.should.be.bignumber.equal(await token.balanceOf(mm.address));
 
       new BigNumber(web3.toWei(tokenTotalSupply, 'ether')).
-        minus(data.burnedTokens).
+        minus(state.burnedTokens).
         should.be.bignumber.equal(await token.totalSupply.call());
-      data.burnedTokens.should.be.bignumber.equal(await mm.totalBurnedTokens.call());
+      state.burnedTokens.should.be.bignumber.equal(await mm.totalBurnedTokens.call());
 
-      if (data.month < periods) {
-        data.marketMakerBuyPrice.should.be.bignumber.equal(await mm.getBuyPrice());
-        assert.equal(data.claimablePercentage, parseInt(await mm.getAccumulatedDistributionPercentage()));
+      if (state.month < periods) {
+        state.marketMakerBuyPrice.should.be.bignumber.equal(await mm.getBuyPrice());
+        assert.equal(state.claimablePercentage, parseInt(await mm.getAccumulatedDistributionPercentage()));
       }
 
-      assert.equal(data.month >= periods, await mm.isFinished());
+      assert.equal(state.month >= periods, await mm.isFinished());
 
-      data.customerEthBalance.should.be.bignumber.equal(web3.eth.getBalance(customer));
-      data.customerLifBalance.should.be.bignumber.equal(await token.balanceOf(customer));
+      state.customerEthBalance.should.be.bignumber.equal(web3.eth.getBalance(customer));
+      state.customerLifBalance.should.be.bignumber.equal(await token.balanceOf(customer));
 
-      data.maxClaimableEth.should.be.bignumber.equal(await mm.getMaxClaimableWeiAmount());
+      state.maxClaimableEth.should.be.bignumber.equal(await mm.getMaxClaimableWeiAmount());
 
-      data.totalClaimedEth.should.be.bignumber.equal(await mm.totalWeiClaimed.call());
+      state.totalClaimedEth.should.be.bignumber.equal(await mm.totalWeiClaimed.call());
     };
 
     let getMaxClaimableEth = function(state) {
