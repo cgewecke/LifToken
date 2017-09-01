@@ -1,6 +1,8 @@
 var _ = require('lodash');
 var jsc = require("jsverify");
 
+var BigNumber = web3.BigNumber;
+
 var help = require("./helpers");
 
 var LifToken = artifacts.require("./LifToken.sol");
@@ -122,6 +124,7 @@ contract('LifCrowdsale Property-based test', function(accounts) {
         crowdsaleContract: crowdsale,
         token: token,
         balances: {},
+        ethBalances: {},
         allowances: {},
         purchases: [],
         presalePurchases: [],
@@ -134,7 +137,9 @@ contract('LifCrowdsale Property-based test', function(accounts) {
         weiPerUSDinPresale: 0,
         weiPerUSDinTGE: 0,
         crowdsaleFunded: false,
-        owner: owner
+        owner: owner,
+        marketMakerBuyPrice: new BigNumber(0),
+        marketMakerBurnedTokens: new BigNumber(0)
       };
 
       for (let commandParams of input.commands) {

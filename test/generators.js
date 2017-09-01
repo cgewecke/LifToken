@@ -119,5 +119,11 @@ module.exports = {
     toAccount: accountGen
   }),
 
+  marketMakerSendTokensCommandGen: jsc.record({
+    type: jsc.constant("marketMakerSendTokens"),
+    tokens: jsc.nat,
+    from: accountGen
+  }),
+
 }
 
