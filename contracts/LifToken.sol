@@ -3,6 +3,13 @@ pragma solidity ^0.4.13;
 import "zeppelin-solidity/contracts/token/MintableToken.sol";
 import "zeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
+/**
+ * @title Líf, the Winding Tree token
+ *
+ * Implementation of Líf, the ERC20 token for Winding Tree, with extra methods
+ * for transfers with contract calls.
+ * Uses OpenZeppelin.
+ */
 contract LifToken is MintableToken, Pausable {
   // Token Name
   string public constant NAME = "Líf";
@@ -17,20 +24,14 @@ contract LifToken is MintableToken, Pausable {
   event TransferData(address indexed from, address indexed to, uint value, bytes data);
   event ApprovalData(address indexed from, address indexed spender, uint value, bytes data);
 
-  function transfer(address _to, uint256 _value) whenNotPaused returns (bool) {
-    return super.transfer(_to, _value);
-  }
-
-  function approve(address _spender, uint256 _value) whenNotPaused returns (bool) {
-    return super.approve(_spender, _value);
-  }
-
-  function transferFrom(address _from, address _to, uint256 _value) whenNotPaused returns (bool) {
-    return super.transferFrom(_from, _to, _value);
-  }
-
-  // approveData is an addition to ERC20 token methods. It allows approving the transference of value and execute a data call on the approval transaction
-  function approveData(address spender, uint value, bytes data) whenNotPaused {
+  /**
+   * @dev `approveData` is an addition to ERC20 token methods.
+   * It allows to approve the transfer of value and execute a call with data in the same transaction
+   * @param spender The address which will spend the funds.
+   * @param value The amount of tokens to be spent.
+   * @param data ABI-encoded contract call. For example generated using web3's getData method
+   */
+  function approveData(address spender, uint value, bytes data) {
 
     require(spender != address(this));
 
@@ -41,8 +42,14 @@ contract LifToken is MintableToken, Pausable {
 
   }
 
-  // transferData is an addition to ERC20 token methods. It allows to transfer value and data on each transaction
-  function transferData(address to, uint value, bytes data) whenNotPaused {
+  /**
+   * @dev Addition to ERC20 token methods. Transfer tokens to a specified address and make a contract call
+   * on the same transaction
+   * @param to address The address which you want to transfer to
+   * @param value uint256 the amout of tokens to be transfered
+   * @param data ABI-encoded contract call. For example generated using web3's getData method
+   */
+  function transferData(address to, uint value, bytes data) {
 
     require(to != address(this));
 
@@ -57,8 +64,15 @@ contract LifToken is MintableToken, Pausable {
 
   }
 
-  // transferDataFrom is an addition to ERC20 token methods. It allows to transfer approved value and data on each transaction
-  function transferDataFrom(address from, address to, uint value, bytes data) whenNotPaused {
+  /**
+   * @dev Addition to ERC20 token methods. Transfer tokens from one address to another and make a contract call
+   * on the same transaction
+   * @param from The address which you want to send tokens from
+   * @param to The address which you want to transfer to
+   * @param value The amout of tokens to be transferred
+   * @param data ABI-encoded contract call. For example generated using web3's getData method
+   */
+  function transferDataFrom(address from, address to, uint value, bytes data) {
 
     require(to != address(this));
 
@@ -77,7 +91,7 @@ contract LifToken is MintableToken, Pausable {
 
   /**
    * @dev Burns a specific amount of tokens.
-   * @param _value The amount of token to be burned.
+   * @param _value The amount of tokens to be burned.
    */
   function burn(uint256 _value) public whenNotPaused {
     require(_value > 0);
