@@ -286,7 +286,7 @@ contract('marketMaker', function(accounts) {
         const totalSupplyWei = web3.toWei(tokenTotalSupply, 'ether');
         const maxClaimable = startingMMBalance.
           mul(state.claimablePercentage).dividedBy(priceFactor).
-          mul(totalSupplyWei - state.marketMakerBurnedTokens).
+          mul(totalSupplyWei.minus(state.marketMakerBurnedTokens)).
           dividedBy(totalSupplyWei).
           minus(state.marketMakerClaimedWei);
         return _.max([0, maxClaimable]);
