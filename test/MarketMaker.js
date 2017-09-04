@@ -219,7 +219,7 @@ contract('marketMaker', function(accounts) {
     data.ethBalances[customerAddressIndex].should.be.bignumber.equal(web3.eth.getBalance(customer));
     data.balances[customerAddressIndex].should.be.bignumber.equal(await token.balanceOf(customer));
 
-    data.marketMakerMaxClaimableEth.should.be.bignumber.equal(await mm.getMaxClaimableWeiAmount());
+    data.marketMakerMaxClaimableWei.should.be.bignumber.equal(await mm.getMaxClaimableWeiAmount());
 
     data.marketMakerClaimedEth.should.be.bignumber.equal(await mm.totalWeiClaimed.call());
   };
@@ -249,7 +249,7 @@ contract('marketMaker', function(accounts) {
       ethBalances: {},
       balances: {},
       marketMakerBuyPrice: startingMMBalance.dividedBy(help.lif2LifWei(tokenTotalSupply)).mul(priceFactor),
-      claimablePercentage: 0, marketMakerMaxClaimableEth: new BigNumber(0),
+      claimablePercentage: 0, marketMakerMaxClaimableWei: new BigNumber(0),
       marketMakerClaimedEth: new BigNumber(0)
     };
     state.ethBalances[customerAddressIndex] = web3.eth.getBalance(customer);
@@ -275,7 +275,7 @@ contract('marketMaker', function(accounts) {
       6583, 7243, 7929, 8640, 9377, 10138
     ];
 
-    let getMaxClaimableEth = function(state) {
+    let getMaxClaimableWei = function(state) {
       if (state.marketMakerMonth >= periods) {
         help.debug("calculating maxClaimableEth with", startingMMBalance, state.marketMakerClaimedEth,
           state.returnedWeiForBurnedTokens);
@@ -311,7 +311,7 @@ contract('marketMaker', function(accounts) {
         mul(priceFactor - state.claimablePercentage).
         dividedBy(help.lif2LifWei(tokenTotalSupply));
       state.marketMakerMonth = month;
-      state.marketMakerMaxClaimableEth = getMaxClaimableEth(state);
+      state.marketMakerMaxClaimableWei = getMaxClaimableWei(state);
 
       await checkScenarioProperties(state, mm, customer);
     };
@@ -336,7 +336,7 @@ contract('marketMaker', function(accounts) {
 
       state.marketMakerClaimedEth = state.marketMakerClaimedEth.plus(weiToClaim);
       state.marketMakerEthBalance = state.marketMakerEthBalance.minus(weiToClaim);
-      state.marketMakerMaxClaimableEth = getMaxClaimableEth(state);
+      state.marketMakerMaxClaimableWei = getMaxClaimableWei(state);
 
       await checkScenarioProperties(state, mm, customer);
     }
@@ -357,7 +357,7 @@ contract('marketMaker', function(accounts) {
     let thrown;
     try {
       thrown = false;
-      await claimEth(state.marketMakerMaxClaimableEth + 1);
+      await claimEth(state.marketMakerMaxClaimableWei + 1);
     } catch(e) {
       thrown = true;
     }
