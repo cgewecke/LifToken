@@ -449,17 +449,17 @@ let priceFactor = 100000
 let getMMMaxClaimableWei = function(state) {
   if (state.marketMakerMonth >= state.marketMakerPeriods) {
     help.debug("calculating maxClaimableEth with", state.marketMakerStartingBalance,
-      state.marketMakerClaimedEth,
+      state.marketMakerClaimedWei,
       state.returnedWeiForBurnedTokens);
     return state.marketMakerStartingBalance.
-      minus(state.marketMakerClaimedEth).
+      minus(state.marketMakerClaimedWei).
       minus(state.returnedWeiForBurnedTokens);
   } else {
     const maxClaimable = state.marketMakerStartingBalance.
       mul(state.claimablePercentage).dividedBy(priceFactor).
       mul(state.initialTokenSupply - state.marketMakerBurnedTokens).
       dividedBy(state.initialTokenSupply).
-      minus(state.marketMakerClaimedEth);
+      minus(state.marketMakerClaimedWei);
     return _.max([0, maxClaimable]);
   }
 }
