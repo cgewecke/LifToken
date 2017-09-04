@@ -224,7 +224,7 @@ contract('marketMaker', function(accounts) {
     data.marketMakerClaimedWei.should.be.bignumber.equal(await mm.totalWeiClaimed.call());
   };
 
-  it.only("should go through scenario with some claims and sells on the Market Maker", async function() {
+  it("should go through scenario with some claims and sells on the Market Maker", async function() {
     // Create MM with balance of 200 ETH and 100 tokens in circulation,
     const priceFactor = 100000;
 
